@@ -1,6 +1,6 @@
 {
   "name": "KALĀ CHRONICLES — Indian Art Through the Ages",
-  "description": "An interactive digital museum exhibition and chronological timeline exploring 5,000 years of Indian art history across six civilizational epochs.",
+  "description": "An interactive digital museum exhibition featuring a chronological timeline with artifact inspection, a geographic art map of regional traditions, and a Warli & Phad regional painting fusion studio.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

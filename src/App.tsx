@@ -1,12 +1,15 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { ARTIFACTS, EPOCHS } from './data/museumData';
-import { Artifact, ArtifactCategory } from './types';
+import { Artifact, ArtifactCategory, AppView } from './types';
 import { Navbar } from './components/Navbar';
 import { HeroSection } from './components/HeroSection';
 import { TimelineAxisNav } from './components/TimelineAxisNav';
 import { SearchFilterBar } from './components/SearchFilterBar';
 import { TimelineView } from './components/TimelineView';
 import { ArtifactDetailInspection } from './components/ArtifactDetailInspection';
+import { ArtMap } from './components/ArtMap';
+import { FusionStudio } from './components/FusionStudio';
+import { AboutView } from './components/AboutView';
 import { CitationModal } from './components/CitationModal';
 import { BookmarksDrawer } from './components/BookmarksDrawer';
 import { CuratorialParametersModal } from './components/CuratorialParametersModal';
@@ -14,9 +17,11 @@ import { MuseumFooter } from './components/MuseumFooter';
 
 export default function App() {
   // Navigation View State
-  const [currentView, setCurrentView] = useState<'timeline' | 'inspection'>('timeline');
+  const [currentView, setCurrentView] = useState<AppView>('timeline');
+  const [previousView, setPreviousView] = useState<AppView>('timeline');
   const [activeArtifact, setActiveArtifact] = useState<Artifact>(ARTIFACTS[0]);
   const [activeEpochId, setActiveEpochId] = useState<string>('epoch-indus');
+  const [fusionStyleFocus, setFusionStyleFocus] = useState<'warli' | 'phad'>('warli');
 
   // Search & Filtering State
   const [searchTerm, setSearchTerm] = useState<string>('');
@@ -115,17 +120,29 @@ export default function App() {
     });
   }, [searchTerm, selectedCategory, selectedPeriod]);
 
-  // Handler: Select an artifact to inspect
-  const handleSelectArtifact = useCallback((artifact: Artifact) => {
-    setActiveArtifact(artifact);
-    setCurrentView('inspection');
+  // Handler: Change view via navbar or internal callouts
+  const handleNavigateView = useCallback((view: AppView) => {
+    setCurrentView((prev) => {
+      setPreviousView(prev);
+      return view;
+    });
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, []);
 
-  // Handler: Return to timeline view, optionally jump to the epoch section
-  const handleBackToTimeline = useCallback((epochId?: string) => {
-    setCurrentView('timeline');
+  // Handler: Select an artifact to inspect
+  const handleSelectArtifact = useCallback((artifact: Artifact) => {
+    setActiveArtifact(artifact);
+    setCurrentView((prev) => {
+      setPreviousView(prev);
+      return 'inspection';
+    });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, []);
+
+  // Handler: Return from inspection
+  const handleBackFromInspection = useCallback((epochId?: string) => {
     if (epochId) {
+      setCurrentView('timeline');
       setActiveEpochId(epochId);
       setTimeout(() => {
         const el = document.getElementById(epochId);
@@ -135,15 +152,19 @@ export default function App() {
           window.scrollTo({ top: 0, behavior: 'smooth' });
         }
       }, 50);
+    } else if (previousView === 'artmap') {
+      setCurrentView('artmap');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     } else {
+      setCurrentView('timeline');
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
-  }, []);
+  }, [previousView]);
 
   // Handler: Click timeline nav epoch button
   const handleSelectEpoch = useCallback((epochId: string) => {
     setActiveEpochId(epochId);
-    if (currentView === 'inspection') {
+    if (currentView !== 'timeline') {
       setCurrentView('timeline');
       setTimeout(() => {
         const el = document.getElementById(epochId);
@@ -154,6 +175,15 @@ export default function App() {
       if (el) el.scrollIntoView({ behavior: 'smooth' });
     }
   }, [currentView]);
+
+  // Handler: Go to Fusion Studio focusing on a specific tradition
+  const handleNavigateToFusion = useCallback((styleId?: 'warli' | 'phad') => {
+    if (styleId) {
+      setFusionStyleFocus(styleId);
+    }
+    setCurrentView('fusion');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, []);
 
   // Handler: Toggle bookmark
   const handleToggleBookmark = useCallback((artifactId: string) => {
@@ -192,14 +222,15 @@ export default function App() {
       <Navbar
         currentView={currentView}
         activeArtifact={activeArtifact}
-        onNavigateTimeline={() => handleBackToTimeline()}
+        onNavigateView={handleNavigateView}
         onOpenDossier={() => handleSelectArtifact(activeArtifact)}
         onOpenParameters={() => setIsParametersModalOpen(true)}
         onOpenBookmarks={() => setIsBookmarksDrawerOpen(true)}
         bookmarkCount={bookmarkedIds.length}
       />
 
-      {currentView === 'timeline' ? (
+      {/* VIEW ROUTING */}
+      {currentView === 'timeline' && (
         <>
           {/* Hero Introductory Section */}
           <HeroSection
@@ -236,12 +267,45 @@ export default function App() {
             onInspectHeroSample={() => handleSelectArtifact(ARTIFACTS[0])}
           />
         </>
-      ) : (
-        /* Detailed Deep-Inspection Experience */
+      )}
+
+      {currentView === 'artmap' && (
+        <ArtMap
+          onSelectArtifact={handleSelectArtifact}
+          onNavigateTimelineToEpoch={(epochId) => {
+            setCurrentView('timeline');
+            setTimeout(() => {
+              const el = document.getElementById(epochId);
+              if (el) el.scrollIntoView({ behavior: 'smooth' });
+            }, 50);
+          }}
+          onNavigateToFusionStudio={handleNavigateToFusion}
+        />
+      )}
+
+      {currentView === 'fusion' && (
+        <FusionStudio
+          initialStyleFocus={fusionStyleFocus}
+          onNavigateToArtMapRegion={(regionId) => {
+            setCurrentView('artmap');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }}
+          onNavigateToTimeline={() => {
+            setCurrentView('timeline');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }}
+        />
+      )}
+
+      {currentView === 'about' && (
+        <AboutView onNavigate={handleNavigateView} />
+      )}
+
+      {currentView === 'inspection' && (
         <ArtifactDetailInspection
           artifact={activeArtifact}
           allArtifacts={ARTIFACTS}
-          onBackToTimeline={handleBackToTimeline}
+          onBackToTimeline={handleBackFromInspection}
           onSelectArtifact={handleSelectArtifact}
           isBookmarked={bookmarkedIds.includes(activeArtifact.id)}
           onToggleBookmark={handleToggleBookmark}
@@ -280,3 +344,4 @@ export default function App() {
     </div>
   );
 }
+
