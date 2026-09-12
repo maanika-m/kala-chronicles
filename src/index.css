@@ -1,0 +1,122 @@
+@import "tailwindcss";
+
+@theme {
+  --color-background: #121416;
+  --color-surface: #121416;
+  --color-surface-dim: #121416;
+  --color-surface-bright: #38393c;
+  --color-surface-variant: #333537;
+  --color-surface-container-lowest: #0c0e10;
+  --color-surface-container-low: #1a1c1e;
+  --color-surface-container: #1e2022;
+  --color-surface-container-high: #282a2c;
+  --color-surface-container-highest: #333537;
+
+  --color-on-surface: #e2e2e5;
+  --color-on-surface-variant: #d4c4b7;
+  --color-on-background: #e2e2e5;
+
+  --color-outline: #9c8e82;
+  --color-outline-variant: #50453b;
+
+  --color-primary: #f2be8c;
+  --color-primary-container: #d4a373;
+  --color-primary-fixed: #ffdcbd;
+  --color-primary-fixed-dim: #f0bd8b;
+  --color-on-primary: #482904;
+  --color-on-primary-container: #5b3912;
+  --color-on-primary-fixed: #2c1600;
+  --color-on-primary-fixed-variant: #623f18;
+
+  --color-secondary: #ffb4a2;
+  --color-secondary-container: #832b15;
+  --color-on-secondary: #611201;
+  --color-on-secondary-container: #ffa088;
+
+  --color-tertiary: #9dd2c8;
+  --color-tertiary-container: #82b6ad;
+  --color-on-tertiary: #003731;
+  --color-on-tertiary-container: #104841;
+
+  --font-display-hero: 'Playfair Display', serif;
+  --font-headline-lg: 'Playfair Display', serif;
+  --font-headline-md: 'Playfair Display', serif;
+  --font-headline-sm: 'Playfair Display', serif;
+  --font-subhead-epoch: 'Space Grotesk', sans-serif;
+  --font-label-mono: 'Space Grotesk', monospace;
+  --font-body-catalog: 'Newsreader', serif;
+  --font-body-narrative: 'Newsreader', serif;
+  --font-caption-provenance: 'Newsreader', serif;
+}
+
+/* Chiaroscuro & Archival Glows */
+.spotlight-radial {
+  background: radial-gradient(ellipse 65% 50% at 50% 30%, rgba(212, 163, 115, 0.09) 0%, rgba(14, 16, 18, 0) 75%);
+}
+
+.hero-vignette {
+  background: radial-gradient(circle at 50% 20%, rgba(242, 190, 140, 0.07) 0%, rgba(18, 20, 22, 0.98) 75%);
+}
+
+.museum-vitrine-spotlight {
+  background: radial-gradient(circle at 50% 32%, rgba(212, 163, 115, 0.08) 0%, rgba(18, 20, 22, 0.95) 75%, #0c0e10 100%);
+}
+
+.hairline-bronze {
+  border: 1px solid rgba(212, 163, 115, 0.18);
+}
+
+.hairline-bronze-subtle {
+  border: 1px solid rgba(212, 163, 115, 0.08);
+}
+
+.timeline-spine-gradient {
+  background: linear-gradient(180deg, rgba(212, 163, 115, 0.8) 0%, rgba(212, 163, 115, 0.4) 40%, rgba(212, 163, 115, 0.7) 70%, rgba(212, 163, 115, 0.2) 100%);
+}
+
+.ruler-ticks {
+  background-image: repeating-linear-gradient(90deg, rgba(212, 163, 115, 0.35) 0px, rgba(212, 163, 115, 0.35) 1px, transparent 1px, transparent 20px);
+}
+
+.ruler-ticks-subtle {
+  background-image: repeating-linear-gradient(90deg, rgba(156, 142, 130, 0.2) 0px, rgba(156, 142, 130, 0.2) 1px, transparent 1px, transparent 5px);
+}
+
+@keyframes pulse-node {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+    box-shadow: 0 0 0 0 rgba(242, 190, 140, 0.6);
+  }
+  50% {
+    transform: scale(1.15);
+    opacity: 0.9;
+    box-shadow: 0 0 0 8px rgba(242, 190, 140, 0);
+  }
+}
+
+.timeline-pulse {
+  animation: pulse-node 2.4s infinite cubic-bezier(0.4, 0, 0.6, 1);
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: #0c0e10;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #50453b;
+  border-radius: 2px;
+}
